@@ -63,14 +63,33 @@ function CustomCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let frame = 0;
+    let pointerX = -80;
+    let pointerY = -80;
+    let lensX = -80;
+    let lensY = -80;
+
+    const animateLens = () => {
+      lensX += (pointerX - lensX) * 0.18;
+      lensY += (pointerY - lensY) * 0.18;
+      ringRef.current?.style.setProperty("--cursor-x", `${lensX}px`);
+      ringRef.current?.style.setProperty("--cursor-y", `${lensY}px`);
+      frame = window.requestAnimationFrame(animateLens);
+    };
+
     const move = (event: globalThis.MouseEvent) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
       dotRef.current?.style.setProperty("--cursor-x", `${event.clientX}px`);
       dotRef.current?.style.setProperty("--cursor-y", `${event.clientY}px`);
-      ringRef.current?.style.setProperty("--cursor-x", `${event.clientX}px`);
-      ringRef.current?.style.setProperty("--cursor-y", `${event.clientY}px`);
     };
+
+    frame = window.requestAnimationFrame(animateLens);
     window.addEventListener("mousemove", move);
-    return () => window.removeEventListener("mousemove", move);
+    return () => {
+      window.removeEventListener("mousemove", move);
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
@@ -157,6 +176,24 @@ function Marquee({ reverse = false }: { reverse?: boolean }) {
 
 function Portfolio() {
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const sections = document.querySelectorAll<HTMLElement>("[data-reveal]");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -8%" },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
+
   const copyDiscord = async () => {
     await navigator.clipboard.writeText("stuti_k_73");
     setCopied(true);
@@ -164,7 +201,7 @@ function Portfolio() {
   };
 
   return (
-    <main>
+    <main className="portfolio-shell">
       <CustomCursor />
       <nav className="site-nav" aria-label="Primary navigation">
         <a className="nav-logo" href="#top" aria-label="Stuti Mohapatra, back to top">SM<span>.</span></a>
@@ -174,9 +211,12 @@ function Portfolio() {
         <span className="nav-status"><i /> Open to work</span>
       </nav>
 
-      <section className="hero" id="top">
+      <section className="hero reveal-section is-visible" id="top">
         <div className="hero-marquee" aria-hidden="true">
-          <span>CODE / CREATE / COMPETE / CODE / CREATE / COMPETE /</span>
+          <div className="hero-marquee-runner">
+            <span>CODE / CREATE / COMPETE / CODE / CREATE / COMPETE /&nbsp;</span>
+            <span>CODE / CREATE / COMPETE / CODE / CREATE / COMPETE /&nbsp;</span>
+          </div>
         </div>
         <div className="hero-grid">
           <div className="hero-copy">
@@ -193,7 +233,7 @@ function Portfolio() {
         <a className="scroll-cue" href="#about"><span>↓</span> SCROLL TO EXPLORE</a>
       </section>
 
-      <section className="about-section" id="about">
+      <section className="about-section reveal-section" id="about" data-reveal>
         <div className="section-label"><span>01</span> ABOUT.EXE</div>
         <div className="about-layout">
           <div className="about-burst" aria-hidden="true">HELLO!</div>
@@ -207,7 +247,7 @@ function Portfolio() {
         </div>
       </section>
 
-      <section className="projects-section" id="projects">
+      <section className="projects-section reveal-section" id="projects" data-reveal>
         <header className="section-header">
           <div className="section-label"><span>02</span> SELECTED BUILDS</div>
           <h2>PROJECTS<span>!</span></h2>
@@ -218,14 +258,14 @@ function Portfolio() {
         </div>
       </section>
 
-      <section className="skills-section" aria-labelledby="skills-title">
+      <section className="skills-section reveal-section" aria-labelledby="skills-title" data-reveal>
         <div className="skills-heading"><span>03</span><h2 id="skills-title">MY TOOLBOX</h2><span>03</span></div>
         <Marquee />
         <Marquee reverse />
         <Marquee />
       </section>
 
-      <footer className="contact-section" id="contact">
+      <footer className="contact-section reveal-section" id="contact" data-reveal>
         <div className="contact-shape shape-one" aria-hidden="true" />
         <div className="contact-shape shape-two" aria-hidden="true" />
         <p className="contact-kicker">HAVE A HARD PROBLEM?</p>
