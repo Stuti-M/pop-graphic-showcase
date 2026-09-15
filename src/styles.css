@@ -199,9 +199,9 @@ button { font: inherit; }
   .nav-status { font-size: .55rem; }
   .hero-grid { min-height: 690px; align-content: start; padding-top: 3rem; }
   .hero-index { margin-top: 1rem; }
-  .glitch-title { font-size: clamp(3.65rem, 17.5vw, 5.5rem); line-height: .82; }
+  .glitch-title { font-size: clamp(3.15rem, 13.2vw, 4.2rem); line-height: .82; }
   .glitch-title span:last-child { -webkit-text-stroke-width: 2px; text-shadow: 5px 5px 0 var(--ink); }
-  .hero-subtitle { max-width: 85%; font-size: .95rem; }
+  .hero-subtitle { max-width: 78%; font-size: .95rem; }
   .avatar-wrap { width: 80vw; right: -22%; bottom: -1%; }
   .hero-stamp { width: 95px; font-size: 2.7rem; }
   .comic-bubble { box-shadow: 10px 10px 0 var(--paper); }
